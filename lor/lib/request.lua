@@ -4,6 +4,7 @@ local pairs = pairs
 local ipairs = ipairs
 local type = type
 local setmetatable = setmetatable
+local json = require("cjson")
 
 local Request = {}
 
@@ -19,19 +20,35 @@ function Request:new()
             -- upload request, should not invoke ngx.req.read_body()
         else
             ngx.req.read_body()
-            local post_args = ngx.req.get_post_args()
-            if post_args and type(post_args) == "table" then
-                for k,v in pairs(post_args) do
-                    body[k] = v
+            local str_body = ngx.req.get_body_data()
+            ngx.log(ngx.DEBUG, str_body)
+            if str_body and type(str_body) == "string" then
+                status, body = pcall(json.decode, str_body)
+                --body = json.decode(str_body)
+                if not stats then
+                    local post_args = ngx.req.get_post_args()
+                    if post_args and type(post_args) == "table" then
+                        for k,v in pairs(post_args) do
+                            body[k] = v
+                        end
+                    end
                 end
             end
         end
     else
         ngx.req.read_body()
-        local post_args = ngx.req.get_post_args()
-        if post_args and type(post_args) == "table" then
-            for k,v in pairs(post_args) do
-                body[k] = v
+        local str_body = ngx.req.get_body_data()
+        ngx.log(ngx.DEBUG, str_body)
+        if str_body and type(str_body) == "string" then
+            status, body = pcall(json.decode, str_body)
+            --body = json.decode(str_body)
+            if not stats then
+                local post_args = ngx.req.get_post_args()
+                if post_args and type(post_args) == "table" then
+                    for k,v in pairs(post_args) do
+                        body[k] = v
+                    end
+                end
             end
         end
     end
