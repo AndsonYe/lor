@@ -25,7 +25,7 @@ function Request:new()
             if str_body and type(str_body) == "string" then
                 status, body = pcall(json.decode, str_body)
                 --body = json.decode(str_body)
-                if not stats then
+                if not status then
                     local post_args = ngx.req.get_post_args()
                     if post_args and type(post_args) == "table" then
                         for k,v in pairs(post_args) do
@@ -38,11 +38,11 @@ function Request:new()
     else
         ngx.req.read_body()
         local str_body = ngx.req.get_body_data()
-        ngx.log(ngx.DEBUG, str_body)
+        --ngx.log(ngx.DEBUG, str_body)
         if str_body and type(str_body) == "string" then
             status, body = pcall(json.decode, str_body)
             --body = json.decode(str_body)
-            if not stats then
+            if not status then
                 local post_args = ngx.req.get_post_args()
                 if post_args and type(post_args) == "table" then
                     for k,v in pairs(post_args) do
